@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexCart | Prime Marketplace & AI Storefront</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --nav-bg: #131921;
+      --subnav-bg: #232f3e;
+      --amber: #febd69;
+      --amber-hover: #f3a847;
+      --buy-btn: #ffd814;
+      --buy-hover: #f7ca00;
+      --bg-page: #eaeded;
+      --card-bg: #ffffff;
+      --text-dark: #0f1111;
+      --text-muted: #565959;
+      --green: #067d62;
+      --red: #cc0c39;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-page); color: var(--text-dark); }
+
+    /* Top Amazon-Style Header */
+    .navbar {
+      background: var(--nav-bg);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 10px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .logo span { color: var(--amber); }
+
+    /* Search Bar */
+    .search-box {
+      flex: 1;
+      display: flex;
+      height: 42px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .search-box select {
+      background: #f3f3f3;
+      border: none;
+      border-right: 1px solid #cdcdcd;
+      padding: 0 12px;
+      font-size: 0.82rem;
+      color: #333;
+      outline: none;
+      cursor: pointer;
+    }
+    .search-box input {
+      flex: 1;
+      border: none;
+      padding: 0 14px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .search-box button {
+      background: var(--amber);
+      border: none;
+      padding: 0 18px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .search-box button:hover { background: var(--amber-hover); }
+
+    .nav-item {
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .nav-item:hover { border-color: #fff; }
+    .nav-small { font-size: 0.72rem; color: #ccc; display: block; }
+    .nav-bold { font-size: 0.88rem; font-weight: 700; }
+
+    .cart-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+    }
+    .cart-badge {
+      background: var(--amber);
+      color: #111;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+    }
+
+    /* Sub-Navbar */
+    .subnav {
+      background: var(--subnav-bg);
+      color: #fff;
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.85rem;
+      overflow-x: auto;
+    }
+    .cat-pill {
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .cat-pill:hover, .cat-pill.active { background: rgba(255,255,255,0.16); font-weight: 600; }
+    .admin-link {
+      margin-left: auto;
+      color: var(--amber);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #fff;
+      padding: 32px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .hero h1 { font-size: 1.8rem; margin-bottom: 6px; }
+    .hero p { color: #cbd5e1; font-size: 0.95rem; }
+
+    /* Toolbar & Product Grid */
+    .container { max-width: 1400px; margin: 0 auto; padding: 20px 24px; }
+    .toolbar {
+      background: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      transition: transform 0.15s;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      background: #f8fafc;
+    }
+    .brand-tag { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+    .prod-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin: 4px 0 8px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .rating { color: #ffa41c; font-size: 0.85rem; margin-bottom: 8px; }
+    .rating span { color: var(--text-muted); font-size: 0.8rem; }
+    .price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+    .price { font-size: 1.45rem; font-weight: 800; }
+    .mrp { font-size: 0.85rem; color: var(--text-muted); text-decoration: line-through; }
+    .discount-badge {
+      background: var(--red);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .stock-ok { color: var(--green); font-size: 0.8rem; font-weight: 600; margin-bottom: 12px; }
+    .add-btn {
+      margin-top: auto;
+      background: var(--buy-btn);
+      border: 1px solid #fcd200;
+      border-radius: 20px;
+      padding: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+    }
+    .add-btn:hover { background: var(--buy-hover); }
+
+    /* Modals & Drawers */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      display: none; justify-content: center; align-items: center; z-index: 200;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: #fff; width: 420px; max-width: 92vw; border-radius: 10px; padding: 24px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    }
+    .modal h2 { margin-bottom: 6px; font-size: 1.35rem; }
+    .modal p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 4px; }
+    .field input, .field textarea, .field select {
+      width: 100%; padding: 10px; border: 1px solid #a6a6a6; border-radius: 6px; font-size: 0.92rem;
+    }
+    .primary-btn {
+      width: 100%; background: var(--amber); border: 1px solid #a88734;
+      padding: 10px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 6px;
+    }
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tab-btn {
+      flex: 1; padding: 8px; border: 1px solid #ddd; background: #f8fafc;
+      border-radius: 6px; font-weight: 600; cursor: pointer;
+    }
+    .tab-btn.active { background: #131921; color: #fff; border-color: #131921; }
+
+    /* Sliding Cart Drawer */
+    .drawer {
+      position: fixed; top: 0; right: -440px; width: 420px; max-width: 95vw; height: 100vh;
+      background: #fff; z-index: 250; box-shadow: -6px 0 24px rgba(0,0,0,0.2);
+      transition: right 0.25s; display: flex; flex-direction: column; padding: 20px;
+    }
+    .drawer.open { right: 0; }
+    .cart-items { flex: 1; overflow-y: auto; margin: 14px 0; display: flex; flex-direction: column; gap: 12px; }
+    .cart-row {
+      display: flex; gap: 12px; border-bottom: 1px solid #eee; padding-bottom: 12px; align-items: center;
+    }
+    .cart-row img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; }
+    .qty-controls { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .qty-controls button { padding: 2px 8px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="navbar">
+    <div class="logo" onclick="resetFilters()">Nex<span>Cart</span></div>
+
+    <div class="search-box">
+      <select id="catSelect" onchange="fetchProducts()">
+        <option value="all">All Categories</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Search NexCart products, brands, and tech..." onkeyup="handleSearchKey(event)" />
+      <button onclick="fetchProducts()">🔍 Search</button>
+    </div>
+
+    <div class="nav-item" onclick="openAuthModal()">
+      <span class="nav-small" id="navGreeting">Hello, Sign in</span>
+      <span class="nav-bold">Account & OTP ▾</span>
+    </div>
+
+    <div class="nav-item" onclick="openOrdersModal()">
+      <span class="nav-small">Returns</span>
+      <span class="nav-bold">& Orders</span>
+    </div>
+
+    <div class="nav-item cart-btn" onclick="toggleCart(true)">
+      🛒 Cart <span class="cart-badge" id="cartCount">0</span>
+    </div>
+  </header>
+
+  <!-- Category Sub-Navigation -->
+  <nav class="subnav" id="subnavBar">
+    <div class="cat-pill active" onclick="selectCategory('all', this)">All Deals</div>
+  </nav>
+
+  <!-- Hero Banner -->
+  <section class="hero">
+    <div>
+      <h1>Next-Gen Marketplace & Prime Delivery</h1>
+      <p>Verified Email OTP Accounts • Real-Time Stock Reservation • Multi-Method Express Checkout</p>
+    </div>
+    <div style="text-align:right; font-size:0.85rem; color:#94a3b8;">
+      Powered by Django DRF & JWT Auth
+    </div>
+  </section>
+
+  <!-- Catalog Toolbar & Grid -->
+  <main class="container">
+    <div class="toolbar">
+      <div id="resultLabel" style="font-weight:600;">Showing all featured products</div>
+      <div>
+        <label style="font-size:0.85rem; margin-right:6px;">Sort by:</label>
+        <select id="sortSelect" onchange="fetchProducts()" style="padding:6px 10px; border-radius:6px;">
+          <option value="featured">Featured</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+          <option value="rating">Avg. Customer Review</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid" id="productGrid"></div>
+  </main>
+
+  <!-- Email OTP Sign In / Sign Up Modal -->
+  <div class="overlay" id="authOverlay">
+    <div class="modal">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 id="authTitle">Sign in with Email OTP</h2>
+        <span style="cursor:pointer; font-size:1.3rem;" onclick="closeAuthModal()">✕</span>
+      </div>
+      <p>Enter your email to receive an instant 6-digit verification code.</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" id="tabLogin" onclick="switchAuthMode('LOGIN')">Sign In</button>
+        <button class="tab-btn" id="tabSignup" onclick="switchAuthMode('SIGNUP')">Create Account</button>
+      </div>
+
+      <div id="authStep1">
+        <div class="field" id="nameField" style="display:none;">
+          <label>Your Full Name</label>
+          <input type="text" id="authName" placeholder="e.g. Harsh Sharma" />
+        </div>
+        <div class="field">
+          <label>Email Address</label>
+          <input type="email" id="authEmail" placeholder="you@example.com" />
+        </div>
+        <button class="primary-btn" onclick="sendOtp()">Send 6-Digit Email OTP</button>
+      </div>
+
+      <div id="authStep2" style="display:none;">
+        <div style="background:#ecfdf5; color:#065f46; padding:10px; border-radius:6px; font-size:0.82rem; margin-bottom:12px;">
+          OTP sent! Check your email inbox (or your VS Code terminal in dev mode).
+        </div>
+        <div class="field">
+          <label>Enter 6-Digit OTP Code</label>
+          <input type="text" id="authOtpCode" maxlength="6" placeholder="123456" />
+        </div>
+        <button class="primary-btn" onclick="verifyOtp()">Verify & Continue</button>
+      </div>
+
+      <div id="loggedInBox" style="display:none; text-align:center; padding:12px 0;">
+        <p id="loggedInEmail" style="font-weight:700; color:#111; margin-bottom:12px;"></p>
+        <button class="primary-btn" style="background:#ef4444; color:#fff; border:none;" onclick="logoutUser()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders History Modal -->
+  <div class="overlay" id="ordersOverlay">
+    <div class="modal" style="width:600px; max-height:85vh; overflow-y:auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2>Your Orders</h2>
+        <span style="cursor:pointer; font-size:1.3rem;" onclick="document.getElementById('ordersOverlay').classList.remove('open')">✕</span>
+      </div>
+      <div id="ordersList">Loading orders...</div>
+    </div>
+  </div>
+
+  <!-- Sliding Cart & Multi-Payment Checkout Drawer -->
+  <aside class="drawer" id="cartDrawer">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:12px;">
+      <h3>Shopping Cart</h3>
+      <span style="cursor:pointer; font-size:1.3rem;" onclick="toggleCart(false)">✕</span>
+    </div>
+
+    <div class="cart-items" id="cartItemsList"></div>
+
+    <div style="border-top:1px solid #ddd; padding-top:14px;">
+      <div style="display:flex; justify-content:space-between; font-size:1.1rem; font-weight:800; margin-bottom:12px;">
+        <span>Subtotal:</span>
+        <span id="cartSubtotal">€0.00</span>
+      </div>
+
+      <div class="field">
+        <label>Delivery Address</label>
+        <textarea id="shipAddress" rows="2" placeholder="Street, Postal Code, Berlin, Germany"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Select Payment Method</label>
+        <select id="paymentMethod">
+          <option value="CARD">💳 Credit / Debit Card (Stripe Instant)</option>
+          <option value="PAYPAL">🅿️ PayPal / Klarna Pay Later</option>
+          <option value="COD">💵 Cash on Delivery (COD)</option>
+        </select>
+      </div>
+
+      <button class="add-btn" onclick="placeOrder()">Proceed to Buy & Place Order</button>
+    </div>
+  </aside>
+
+  <script>
+    let authMode = 'LOGIN';
+    let selectedCategory = 'all';
+    let token = localStorage.getItem('nexcart_token') || '';
+    let currentUser = JSON.parse(localStorage.getItem('nexcart_user') || 'null');
+
+    function updateNavUser() {
+      if (currentUser) {
+        document.getElementById('navGreeting').textContent = `Hello, ${currentUser.full_name.split(' ')[0]}`;
+        if (currentUser.default_address) {
+          document.getElementById('shipAddress').value = currentUser.default_address;
+        }
+      } else {
+        document.getElementById('navGreeting').textContent = 'Hello, Sign in';
+      }
+    }
+
+    async function loadCategories() {
+      const res = await fetch('/api/store/categories/');
+      const cats = await res.json();
+      const sel = document.getElementById('catSelect');
+      const sub = document.getElementById('subnavBar');
+
+      cats.forEach(c => {
+        sel.innerHTML += `<option value="${c.slug}">${c.name}</option>`;
+        sub.innerHTML += `<div class="cat-pill" onclick="selectCategory('${c.slug}', this)">${c.icon} ${c.name}</div>`;
+      });
+      sub.innerHTML += `<a href="/admin/" target="_blank" class="admin-link">⚙️ Seller Admin Panel</a>`;
+    }
+
+    function selectCategory(slug, el) {
+      selectedCategory = slug;
+      document.getElementById('catSelect').value = slug;
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+      if (el) el.classList.add('active');
+      fetchProducts();
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      selectCategory('all', document.querySelector('.cat-pill'));
+    }
+
+    function handleSearchKey(e) {
+      if (e.key === 'Enter') fetchProducts();
+    }
+
+    async function fetchProducts() {
+      const q = document.getElementById('searchInput').value;
+      const cat = document.getElementById('catSelect').value || selectedCategory;
+      const sort = document.getElementById('sortSelect').value;
+
+      const res = await fetch(`/api/store/products/?q=${encodeURIComponent(q)}&category=${encodeURIComponent(cat)}&sort=${sort}`);
+      const products = await res.json();
+
+      document.getElementById('resultLabel').textContent = `Showing ${products.length} product(s)`;
+      const grid = document.getElementById('productGrid');
+
+      grid.innerHTML = products.map(p => `
+        <div class="card">
+          <img src="${p.image || 'https://via.placeholder.com/300x200?text=NexCart'}" alt="${p.title}" />
+          <div class="brand-tag">${p.brand} • ${p.category}</div>
+          <div class="prod-title">${p.title}</div>
+          <div class="rating">★★★★☆ ${p.rating} <span>(${p.review_count})</span></div>
+          <div class="price-row">
+            <span class="price">€${p.price.toFixed(2)}</span>
+            <span class="mrp">€${p.mrp_price.toFixed(2)}</span>
+            ${p.discount_percent > 0 ? `<span class="discount-badge">-${p.discount_percent}%</span>` : ''}
+          </div>
+          <div class="stock-ok">${p.stock_qty > 0 ? `In Stock (${p.stock_qty} left)` : '<span style="color:red;">Out of Stock</span>'}</div>
+          <button class="add-btn" onclick="addToCart(${p.id})" ${p.stock_qty === 0 ? 'disabled' : ''}>Add to Cart</button>
+        </div>
+      `).join('');
+    }
+
+    // Auth & Email OTP Functions
+    function openAuthModal() {
+      document.getElementById('authOverlay').classList.add('open');
+      if (currentUser) {
+        document.getElementById('authStep1').style.display = 'none';
+        document.getElementById('authStep2').style.display = 'none';
+        document.getElementById('loggedInBox').style.display = 'block';
+        document.getElementById('loggedInEmail').textContent = `Signed in as ${currentUser.full_name} (${currentUser.email})`;
+      } else {
+        document.getElementById('authStep1').style.display = 'block';
+        document.getElementById('authStep2').style.display = 'none';
+        document.getElementById('loggedInBox').style.display = 'none';
+      }
+    }
+    function closeAuthModal() { document.getElementById('authOverlay').classList.remove('open'); }
+
+    function switchAuthMode(mode) {
+      authMode = mode;
+      document.getElementById('tabLogin').classList.toggle('active', mode === 'LOGIN');
+      document.getElementById('tabSignup').classList.toggle('active', mode === 'SIGNUP');
+      document.getElementById('nameField').style.display = mode === 'SIGNUP' ? 'block' : 'none';
+      document.getElementById('authTitle').textContent = mode === 'SIGNUP' ? 'Create Account with Email OTP' : 'Sign in with Email OTP';
+    }
+
+    async function sendOtp() {
+      const email = document.getElementById('authEmail').value;
+      const res = await fetch('/api/auth/request-otp/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, purpose: authMode })
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.error || 'Error sending OTP');
+
+      document.getElementById('authStep1').style.display = 'none';
+      document.getElementById('authStep2').style.display = 'block';
+    }
+
+    async function verifyOtp() {
+      const email = document.getElementById('authEmail').value;
+      const code = document.getElementById('authOtpCode').value;
+      const full_name = document.getElementById('authName').value;
+
+      const res = await fetch('/api/auth/verify-otp/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code, full_name })
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.error || 'Invalid OTP');
+
+      token = data.access;
+      currentUser = data.user;
+      localStorage.setItem('nexcart_token', token);
+      localStorage.setItem('nexcart_user', JSON.stringify(currentUser));
+      updateNavUser();
+      closeAuthModal();
+      loadCart();
+    }
+
+    function logoutUser() {
+      token = '';
+      currentUser = null;
+      localStorage.removeItem('nexcart_token');
+      localStorage.removeItem('nexcart_user');
+      updateNavUser();
+      document.getElementById('cartCount').textContent = '0';
+      closeAuthModal();
+    }
+
+    // Cart & Checkout Functions
+    function toggleCart(open) {
+      if (open && !token) return openAuthModal();
+      document.getElementById('cartDrawer').classList.toggle('open', open);
+      if (open) loadCart();
+    }
+
+    async function addToCart(productId) {
+      if (!token) return openAuthModal();
+      const res = await fetch('/api/store/cart/update/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ product_id: productId, action: 'add' })
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.error);
+      toggleCart(true);
+    }
+
+    async function changeQty(productId, action) {
+      await fetch('/api/store/cart/update/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ product_id: productId, action })
+      });
+      loadCart();
+    }
+
+    async function loadCart() {
+      if (!token) return;
+      const res = await fetch('/api/store/cart/', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+
+      document.getElementById('cartCount').textContent = data.total_items;
+      document.getElementById('cartSubtotal').textContent = `€${data.subtotal.toFixed(2)}`;
+
+      const list = document.getElementById('cartItemsList');
+      if (data.items.length === 0) {
+        list.innerHTML = '<p style="color:#666;">Your NexCart is empty.</p>';
+        return;
+      }
+
+      list.innerHTML = data.items.map(i => `
+        <div class="cart-row">
+          <img src="${i.product.image}" />
+          <div style="flex:1;">
+            <div style="font-weight:600; font-size:0.88rem;">${i.product.title}</div>
+            <div style="font-weight:800; margin-top:4px;">€${i.line_total.toFixed(2)}</div>
+            <div class="qty-controls">
+              <button onclick="changeQty(${i.product.id}, 'decrease')">-</button>
+              <span>${i.quantity}</span>
+              <button onclick="changeQty(${i.product.id}, 'add')">+</button>
+              <button onclick="changeQty(${i.product.id}, 'remove')" style="margin-left:auto; color:red;">Delete</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function placeOrder() {
+      const shipping_address = document.getElementById('shipAddress').value;
+      const payment_method = document.getElementById('paymentMethod').value;
+
+      const res = await fetch('/api/store/checkout/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ shipping_address, payment_method })
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.error || 'Checkout failed');
+
+      alert(`Order Confirmed! Order ID: ${data.order_number}\nTotal: €${data.total_amount.toFixed(2)}\nPayment: ${data.payment_method}`);
+      toggleCart(false);
+      fetchProducts();
+      loadCart();
+    }
+
+    async function openOrdersModal() {
+      if (!token) return openAuthModal();
+      document.getElementById('ordersOverlay').classList.add('open');
+      const res = await fetch('/api/store/orders/', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const orders = await res.json();
+      const box = document.getElementById('ordersList');
+
+      if (!orders.length) {
+        box.innerHTML = '<p>No orders placed yet.</p>';
+        return;
+      }
+      box.innerHTML = orders.map(o => `
+        <div style="border:1px solid #ddd; border-radius:8px; padding:14px; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:6px;">
+            <span>Order #${o.order_number}</span>
+            <span style="color:#067d62;">${o.order_status}</span>
+          </div>
+          <div style="font-size:0.82rem; color:#555; margin-bottom:8px;">
+            Placed: ${o.created_at} • Total: <b>€${o.total_amount.toFixed(2)}</b> • ${o.payment_method}
+          </div>
+          ${o.items.map(it => `<div style="font-size:0.85rem;">• ${it.quantity}x ${it.title} (€${it.unit_price.toFixed(2)})</div>`).join('')}
+        </div>
+      `).join('');
+    }
+
+    // Boot App
+    updateNavUser();
+    loadCategories();
+    fetchProducts();
+    loadCart();
+  </script>
+</body>
+</html>
